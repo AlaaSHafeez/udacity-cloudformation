@@ -1,0 +1,2 @@
+aws cloudformation package --template-file main.yml --s3-bucket udacity-cloudformation-bck > bck.yaml
+aws cloudformation create-stack --stack-name Udagram --template-body file://bck.yaml  --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1

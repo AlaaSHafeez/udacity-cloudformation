@@ -1,0 +1,39 @@
+Description: >
+    Udacity Deploy a high-availability web app using CloudFormation
+
+Resources:
+
+  NetworkStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: network.yml
+      Parameters: 
+        EnvironmentName : "Udagram"
+        VpcCIDR: "10.0.0.0/16"
+        PublicSubnet1CIDR: "10.0.0.0/24"
+        PublicSubnet2CIDR: "10.0.1.0/24"
+        PrivateSubnet1CIDR: "10.0.2.0/24"
+        PrivateSubnet2CIDR: "10.0.3.0/24"
+
+  ServerStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: servers.yml
+      Parameters: 
+        EnvironmentName : "Udagram"
+        ASGMinSize: "4"
+        ASGMaxSize: "8"
+        EC2ImageId: "ami-0729e439b6769d6ab"
+        EC2InstanceType: "t3.medium"
+        EBSVolumeSize: "10"
+        # Dependencies
+        VPC: !GetAtt NetworkStack.Outputs.VPC
+        VPCPublicRouteTable: !GetAtt NetworkStack.Outputs.VPCPublicRouteTable
+        VPCPrivateRouteTable1: !GetAtt NetworkStack.Outputs.VPCPrivateRouteTable1
+        VPCPrivateRouteTable2: !GetAtt NetworkStack.Outputs.VPCPrivateRouteTable2
+        PublicSubnets: !GetAtt NetworkStack.Outputs.PublicSubnets
+        PrivateSubnets: !GetAtt NetworkStack.Outputs.PrivateSubnets
+        PublicSubnet1: !GetAtt NetworkStack.Outputs.PublicSubnet1
+        PublicSubnet2: !GetAtt NetworkStack.Outputs.PublicSubnet2
+        PrivateSubnet1: !GetAtt NetworkStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt NetworkStack.Outputs.PrivateSubnet2

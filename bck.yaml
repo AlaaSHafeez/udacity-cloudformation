@@ -1,0 +1,65 @@
+
+Description: "Udacity Deploy a high-availability web app using CloudFormation\n"
+Resources:
+  NetworkStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/udacity-cloudformation-bck/c493096446160f5abd830dc0f431b331.template
+      Parameters:
+        EnvironmentName: Udagram
+        VpcCIDR: 10.0.0.0/16
+        PublicSubnet1CIDR: 10.0.0.0/24
+        PublicSubnet2CIDR: 10.0.1.0/24
+        PrivateSubnet1CIDR: 10.0.2.0/24
+        PrivateSubnet2CIDR: 10.0.3.0/24
+  ServerStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/udacity-cloudformation-bck/709c17f09ecb266695ed49a92f816e6d.template
+      Parameters:
+        EnvironmentName: Udagram
+        ASGMinSize: '4'
+        ASGMaxSize: '8'
+        EC2ImageId: ami-0729e439b6769d6ab
+        EC2InstanceType: t3.medium
+        EBSVolumeSize: '10'
+        VPC:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.VPC
+        VPCPublicRouteTable:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.VPCPublicRouteTable
+        VPCPrivateRouteTable1:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.VPCPrivateRouteTable1
+        VPCPrivateRouteTable2:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.VPCPrivateRouteTable2
+        PublicSubnets:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.PublicSubnets
+        PrivateSubnets:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.PrivateSubnets
+        PublicSubnet1:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.PublicSubnet1
+        PublicSubnet2:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.PublicSubnet2
+        PrivateSubnet1:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.PrivateSubnet1
+        PrivateSubnet2:
+          Fn::GetAtt:
+          - NetworkStack
+          - Outputs.PrivateSubnet2
